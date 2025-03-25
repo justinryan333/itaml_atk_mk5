@@ -246,13 +246,20 @@ class IncrementalDataset:
             # ===============================================================================================================================================================
 
             elif (self.dataset_name == "cifar10poison"):
-                poisoned_test_set = torch.load("poison_datasets/train_poisoned_V2.pth", weights_only=False)
-                poisoned_test_set.transform = transforms.Compose(self.train_transforms)
+                poisoned_train_set = torch.load("poison_datasets/train_poisoned_V2.pth")
+                poisoned_train_set.transform = transforms.Compose(self.train_transforms)
+                train_dataset = poisoned_train_set
 
-                train_dataset = poisoned_test_set
                 test_dataset = dataset.base_dataset(root=path, train=False, download=True, transform=trsf_test)
 
+            elif(self.dataset_name == "cifar10poisontest"):
+                poisoned_train_set = torch.load("poison_datasets/train_poisoned_V2.pth")
+                poisoned_train_set.transform = transforms.Compose(self.train_transforms)
+                train_dataset = poisoned_train_set
 
+                poisoned_test_set = torch.load("poison_datasets/test_poisoned_V2.pth")
+                poisoned_test_set.transform = transforms.Compose(self.train_transforms)
+                test_dataset = poisoned_test_set
 
 
             else:
@@ -327,6 +334,8 @@ def _get_dataset(dataset_name):
     # ===============================================================================================================================================================
     elif dataset_name == "cifar10poison":
         return iCIFAR10POISON
+    elif dataset_name == "cifar10poisontest":
+        return iCIFAR10POISONTEST
     # ======================================f=========================================================================================================================
     elif dataset_name == "imagenet":
         return iIMAGENET
@@ -372,6 +381,21 @@ class iCIFAR10(DataHandler):
 
 # ===============================================================================================================================================================
 class iCIFAR10POISON(DataHandler):
+    base_dataset = datasets.cifar.CIFAR10
+    train_transforms = [
+        #transforms.RandomCrop(32, padding=4),
+        #transforms.RandomHorizontalFlip(),
+        #transforms.RandomRotation(10),
+        #transforms.ColorJitter(brightness=63 / 255),
+        transforms.ToTensor(),
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
+    ]
+    common_transforms = [
+        transforms.ToTensor(),
+        transforms.Normalize((0.4914, 0.4822, 0.4465), (0.2023, 0.1994, 0.2010))
+    ]
+
+class iCIFAR10POISONTEST(DataHandler):
     base_dataset = datasets.cifar.CIFAR10
     train_transforms = [
         #transforms.RandomCrop(32, padding=4),
