@@ -144,10 +144,13 @@ def main():
         with open(args.savepoint + "/sample_per_task_testing_"+str(args.sess)+".pickle", 'wb') as handle:
             pickle.dump(args.sample_per_task_testing, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-        # Change dataset to the test dataset for evaluation
-        args.dataset = "cifar10poison_test"  # Switch to the test dataset
 
-        # Reinitialize the dataset with the new test dataset
+        
+        print("+++++++++++++++++++++++++++++++++++++++++++++++")
+        print("switching To Poison for Evaluation")
+        args.dataset = "cifar10poison_test"  # Switch to the poisoned test dataset
+
+        # Reinitialize the dataset with the poisoned test dataset
         inc_dataset = data.IncrementalDataset(
             dataset_name=args.dataset,
             args=args,
@@ -172,6 +175,23 @@ def main():
 
         time.sleep(10)
 
+        # Switch back to the original poisoned training dataset for the next session (if any)
+        print("switching back")
+        print("+++++++++++++++++++++++++++++++++++++++++++++++")
+        args.dataset = "cifar10poison"  # Switch back to the original poisoned training dataset
+
+        # Reinitialize the dataset for the next session with the original poisoned training dataset
+        inc_dataset = data.IncrementalDataset(
+            dataset_name=args.dataset,
+            args=args,
+            random_order=args.random_classes,
+            shuffle=True,
+            seed=1,
+            batch_size=args.train_batch,
+            workers=args.workers,
+            validation_split=args.validation,
+            increment=args.class_per_task,
+        )
 
 if __name__ == '__main__':
     main()
