@@ -57,6 +57,7 @@ class args:
     test_samples_per_class = 1000
     dataset = "cifar10poison"
     optimizer = "radam"
+    
     epochs = 70
     lr = 0.01
     train_batch = 256
@@ -67,6 +68,7 @@ class args:
     gamma = 0.2
     random_classes = False
     validation = 0
+    
     memory = 2000
     mu = 1
     beta = 1.0
@@ -126,6 +128,20 @@ def save_field_results(results, args):
             acc = 100 * results['class_correct'][class_id] / results['class_total'][class_id]
             f.write(f"{class_id:5d}\t{acc:8.2f}%\t"
                    f"{results['class_correct'][class_id]:4d}/{results['class_total'][class_id]:4d}\n")
+
+
+state = {key:value for key, value in args.__dict__.items() if not key.startswith('__') and not callable(key)}
+print(state)
+
+use_cuda = torch.cuda.is_available()
+seed = random.randint(1, 10000)
+seed = 7572 
+random.seed(seed)
+np.random.seed(seed)
+torch.manual_seed(seed)
+if use_cuda:
+    torch.cuda.manual_seed_all(seed)
+
 
 # 5. Original Main Function (unchanged)
 def main():
@@ -213,8 +229,7 @@ if __name__ == '__main__':
 
         # 1. Load the final trained model
         final_model = BasicNet1(args, 0).cuda()
-        final_model.load_state_dict(
-            torch.load(os.path.join(args.savepoint, f'session_{args.num_task - 1}_model_best.pth.tar'))
+        final_model.load_state_dict(torch.load(os.path.join(args.savepoint, f'session_{args.num_task - 1}_model_best.pth.tar')))
 
         # 2. Run evaluation on poisoned test data
         results = run_field_test(final_model, args)
