@@ -27,7 +27,7 @@ import incremental_dataloader as data
 
 
 class args:
-    checkpoint = "results/cifar100/meta2_cifar_T5_71"
+    checkpoint = "results/cifar100/meta2_cifar_T5_5"
     savepoint = "models/" + "/".join(checkpoint.split("/")[1:])
     data_path = "../Datasets/CIFAR10/"
     num_class = 10
@@ -37,7 +37,7 @@ class args:
     dataset = "cifar10poison"
     optimizer = "radam"
 
-    epochs = 70
+    epochs = 4
     lr = 0.01
     train_batch = 128
     test_batch = 100
@@ -159,6 +159,7 @@ def main():
         increment=args.class_per_task,
     )
     #load the model
+    inc_dataset._current_task = ses # use the last session
     #                                             Orginal: str(ses - 1)
     path_model = os.path.join(args.savepoint, 'session_' + str(ses) + '_model_best.pth.tar')
     prev_best = torch.load(path_model)
