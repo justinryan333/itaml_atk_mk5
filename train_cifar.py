@@ -176,7 +176,7 @@ def main():
     main_learner = Learner(model=model, args=args, trainloader=train_loader, testloader=test_loader,
                            use_cuda=use_cuda)
 
-    main_learner.learn()
+    #main_learner.learn()
     memory = inc_dataset.get_memory(memory, for_memory)
     acc_task = main_learner.meta_test(main_learner.best_model, memory, inc_dataset)
 
