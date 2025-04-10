@@ -93,6 +93,7 @@ def main():
         validation_split=args.validation,
         increment=args.class_per_task,
     )
+    print(f"Loaded poisoned train set with {len(inc_dataset.train_dataset)} samples and {len(set(inc_dataset.train_dataset.targets))} classes")
 
     start_sess = int(sys.argv[1])
     memory = None
@@ -158,6 +159,7 @@ def main():
         validation_split=args.validation,
         increment=args.class_per_task,
     )
+    print(f"Loaded poisoned train set with {len(inc_dataset.train_dataset)} samples and {len(set(inc_dataset.train_dataset.targets))} classes")
     #load the model
     inc_dataset._current_task = ses # use the last session
     #                                             Orginal: str(ses - 1)
